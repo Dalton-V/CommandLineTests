@@ -10,12 +10,12 @@ the Switch user icon's **Edit Background** color picker. Take one at the top of
 the palette (`-Up.png`) and one at the bottom (`-Down.png`). Add the pair to
 [Switch1](CaptureCardCalibration/Switch1) or [Switch2](CaptureCardCalibration/Switch2).
 
-| Switch 2 at the top of the palette | Switch 2 at the bottom of the palette |
-| --- | --- |
+| Switch 2 at the top of the palette                                                                                                       | Switch 2 at the bottom of the palette                                                                                                         |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | <img src="CaptureCardCalibration/Switch2/Dolphin-Win-HD60Pro-Up.png" width="320" alt="Edit Background color picker scrolled to the top"> | <img src="CaptureCardCalibration/Switch2/Dolphin-Win-HD60Pro-Down.png" width="320" alt="Edit Background color picker scrolled to the bottom"> |
 
 In your pull request, include the capture card make and model, your operating
-system (OS), and the Switch model and video settings (such as HDR and RGB range).
+system (OS), and the Switch model.
 Maintainers can run the calibration scripts and assign the label for you. If you
 want to run them yourself, follow the [calibration guide](CaptureCardCalibration/README.md).
 
