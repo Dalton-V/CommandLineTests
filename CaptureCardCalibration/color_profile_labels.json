@@ -10,11 +10,13 @@
     {"up": "Switch1/Kuro-Win-CheapCard-Up.png", "down": "Switch1/Kuro-Win-CheapCard-Down.png"},
     {"up": "Switch1/jw-Win-CheapCard-Up.png", "down": "Switch1/jw-Win-CheapCard-Down.png"},
     {"up": "Switch2/Astro-Win-CheapCard-Up.png", "down": "Switch2/Astro-Win-CheapCard-Down.png"},
-    {"up": "Switch1/Dolphin-Win-CheapCard-Up.png", "down": "Switch1/Dolphin-Win-CheapCard-Down.png"}
+    {"up": "Switch1/Butters-Win-Generic-Switch1v1-Up.png", "down": "Switch1/Butters-Win-Generic-Switch1v1-Down.png"}
   ],
   "Win-CheapCard-GreenShift": [
+    {"up": "Switch1/Dolphin-Win-CheapCard-Up.png", "down": "Switch1/Dolphin-Win-CheapCard-Down.png"},
     {"up": "Switch2/Fye-Win-CheapCard-Up.png", "down": "Switch2/Fye-Win-CheapCard-Down.png"},
-    {"up": "Switch2/jw-Win-CheapCard-Up.png", "down": "Switch2/jw-Win-CheapCard-Down.png"}
+    {"up": "Switch2/jw-Win-CheapCard-Up.png", "down": "Switch2/jw-Win-CheapCard-Down.png"},
+    {"up": "Switch1/Butters-Win-Acer-Passthrough-Switch1v2-Up.png", "down": "Switch1/Butters-Win-Acer-Passthrough-Switch1v2-Down.png"}
   ],
   "Win-CheapCard-HighContrast": [
     {"up": "Switch1/Fye-Win-CheapCard-Up.png", "down": "Switch1/Fye-Win-CheapCard-Down.png"}
@@ -33,7 +35,8 @@
     {"up": "Switch2/Dolphin-Win-HD60Pro-Up.png", "down": "Switch2/Dolphin-Win-HD60Pro-Down.png"}
   ],
   "Mac-Mirabox-HighContrast": [
-    {"up": "Switch1/Gimikyu-mac-Mirabox-Up.png", "down": "Switch1/Gimikyu-mac-Mirabox-Down.png"}
+    {"up": "Switch1/Gimikyu-mac-Mirabox-Up.png", "down": "Switch1/Gimikyu-mac-Mirabox-Down.png"},
+    {"up": "Switch1/Butters-Win-Acer-NoPassthrough-Switch1v1-Up.png", "down": "Switch1/Butters-Win-Acer-NoPassthrough-Switch1v1-Down.png"}
   ],
   "Mac-Mirabox": [
     {"up": "Switch2/Gimikyu-mac-Mirabox-Up.png", "down": "Switch2/Gimikyu-mac-Mirabox-Down.png"},
