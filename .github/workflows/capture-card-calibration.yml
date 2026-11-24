@@ -1,0 +1,126 @@
+name: Capture card calibration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'CaptureCardCalibration/Switch1/**'
+      - 'CaptureCardCalibration/Switch2/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'CaptureCardCalibration/color_profile_labels.json'
+      - 'CaptureCardCalibration/color_profile_to_transform.json'
+      - 'CaptureCardCalibration/color_profile_extremes.json'
+      - 'CaptureCardCalibration/measure_capture_card_colors.py'
+      - 'CaptureCardCalibration/propose_capture_card_labels.py'
+      - 'CaptureCardCalibration/requirements.txt'
+      - '.github/workflows/capture-card-calibration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate calibration files
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Install calibration dependencies
+        run: python -m pip install -r CaptureCardCalibration/requirements.txt
+      - name: Check screenshot pairs and regenerate transforms
+        run: |
+          python CaptureCardCalibration/propose_capture_card_labels.py --dry-run
+          python CaptureCardCalibration/measure_capture_card_colors.py
+          git diff --exit-code -- CaptureCardCalibration/color_profile_to_transform.json CaptureCardCalibration/color_profile_extremes.json
+
+  publish:
+    name: Open or update calibration PR
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: capture-card-calibration-publisher
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - name: Install calibration dependencies
+        run: python -m pip install -r CaptureCardCalibration/requirements.txt
+      - name: Propose labels and regenerate transforms
+        id: calibration
+        run: |
+          body="$RUNNER_TEMP/calibration-pr.md"
+          python CaptureCardCalibration/propose_capture_card_labels.py --summary "$body"
+          python CaptureCardCalibration/measure_capture_card_colors.py
+
+          if git diff --quiet -- CaptureCardCalibration/; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+
+          extremes=CaptureCardCalibration/color_profile_extremes.json
+          {
+            echo
+            echo '### Extreme profiles'
+            echo
+            if git diff --quiet -- "$extremes"; then
+              echo 'The extreme profiles and their transforms are unchanged.'
+            else
+              echo '```diff'
+              git --no-pager diff --no-color -- "$extremes"
+              echo '```'
+            fi
+          } >> "$body"
+      - name: Upload swatch report
+        id: swatches
+        if: steps.calibration.outputs.changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: calibration-swatches-${{ github.run_attempt }}
+          path: CaptureCardCalibration/color_profile_report.png
+          if-no-files-found: error
+      - name: Finish PR summary
+        env:
+          SWATCH_URL: ${{ steps.swatches.outputs.artifact-url }}
+          NEEDS_REVIEW: ${{ steps.calibration.outputs.needs_review }}
+        run: |
+          body="$RUNNER_TEMP/calibration-pr.md"
+          {
+            if [ -n "$SWATCH_URL" ]; then
+              echo
+              printf '[Download the swatch report](%s)\n' "$SWATCH_URL"
+            fi
+            if [ "$NEEDS_REVIEW" = true ]; then
+              echo
+              echo 'Review the provisional labels before marking this PR ready.'
+              echo 'After changing a label, run `python CaptureCardCalibration/measure_capture_card_colors.py` and commit both transform files.'
+            fi
+          } >> "$body"
+          cat "$body" >> "$GITHUB_STEP_SUMMARY"
+      - name: Open or update calibration PR
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          base: main
+          branch: automation/capture-card-calibrations
+          title: Update capture card calibration profiles
+          commit-message: Update capture card calibration profiles
+          body-path: ${{ runner.temp }}/calibration-pr.md
+          draft: ${{ steps.calibration.outputs.needs_review == 'true' && 'always-true' || 'false' }}
+          add-paths: |
+            CaptureCardCalibration/color_profile_labels.json
+            CaptureCardCalibration/color_profile_to_transform.json
+            CaptureCardCalibration/color_profile_extremes.json
